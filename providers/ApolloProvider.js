@@ -2,7 +2,10 @@ import React from 'react'
 import {ApolloProvider, ApolloClient, ApolloLink, InMemoryCache, createHttpLink} from '@apollo/client'
 import {onError} from '@apollo/client/link/error'
 
-const httpLink = createHttpLink({uri: process.env.NEXT_PUBLIC_HOST + '/api/graphql', credentials: 'same-origin'})
+const httpLink = createHttpLink({
+  uri: (process.env.VERCEL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000') + '/api/graphql',
+  credentials: 'same-origin',
+})
 
 const errorLink = onError(({graphQLErrors, networkError, operation, ...rest}) => {
   console.log(operation.operationName)
