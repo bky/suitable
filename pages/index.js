@@ -1,65 +1,94 @@
+import React from 'react'
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import {gql} from '@apollo/client'
+import * as hooks from 'hooks'
+import * as utils from 'utils'
+import Button from '@material-ui/core/Button'
+import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
+import {DataGrid} from '@material-ui/data-grid'
+import Link from 'next/link'
+import PageHeader from 'components/PageHeader'
 
-export default function Home() {
+const TABLE_PAGE_SIZE = 18
+const TABLE_HEADER_HEIGHT = 36
+const TABLE_ROW_HEIGHT = 36
+
+const GET_ADDRESSES = gql`
+  query getAddresses {
+    addresses {
+      id
+      dawa_id
+      name
+      name_without_city
+      postal_code
+      city
+      street
+      number
+      floor
+      extra
+      lng
+      lat
+      matrikelnr
+    }
+  }
+`
+
+export async function getServerSideProps(context) {
+  return {props: {}}
+}
+
+function Addresses(props) {
+  // LOG(props)
+  const query = hooks.useQuery(GET_ADDRESSES, {fetchPolicy: 'cache-and-network'})
+  const router = hooks.useRouter()
+  LOG(query.data)
+  const addresses = React.useMemo(() => {
+    const addresses = query.data?.addresses ?? []
+    return addresses.map((address) => ({...address, postal_code_and_city: `${address.postal_code} ${address.city}`}))
+  }, [query.data?.addresses])
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
+        <title>Suitable - Adresser</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+      <Box display="flex" alignItems="flex-end" justifyContent="space-between">
+        <PageHeader>Adresser</PageHeader>
+        <Link href="/addresses/new" passHref>
+          <Button variant="contained" color="primary">
+            Tilføj adresse
+          </Button>
+        </Link>
+      </Box>
+      <Box pt={2} style={{height: TABLE_HEADER_HEIGHT + TABLE_ROW_HEIGHT * TABLE_PAGE_SIZE + 72 + 20}}>
+        <DataGrid
+          loading={query.loading && !addresses.length}
+          // error
+          rows={addresses}
+          columns={[
+            {field: 'postal_code_and_city', headerName: 'By', width: 200},
+            {field: 'name_without_city', headerName: 'Gade', flex: 1},
+            // {field: 'postal_code', headerName: 'Postnummer', width: 120},
+            // {field: 'city', headerName: 'By', width: 200},
+            // {field: 'street', headerName: 'Gade', width: 420},
+            // {field: 'number', headerName: 'Nummer', width: 160},
+            // {field: 'floor', headerName: 'Etage', width: 160},
+            // {field: 'extra', headerName: 'Dør', width: 160},
+          ]}
+          pageSize={TABLE_PAGE_SIZE}
+          // autoHeight
+          headerHeight={TABLE_HEADER_HEIGHT}
+          rowHeight={TABLE_ROW_HEIGHT}
+          // showColumnRightBorder
+          onRowClick={(param) => {
+            router.push('/addresses/' + param.data.id)
+          }}
+        />
+      </Box>
+    </>
   )
 }
+
+export default Addresses
