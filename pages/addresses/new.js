@@ -107,6 +107,10 @@ export default function AddressesNew(props) {
               // placeholder="Søg efter adresse ..."
               label="Søg efter adresse"
               variant="outlined"
+              inputProps={{
+                ...params.inputProps,
+                autoComplete: 'new-password',
+              }}
             />
           )}
         />
