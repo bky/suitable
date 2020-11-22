@@ -34,12 +34,6 @@ const DELETE_ADDRESS = gql`
   }
 `
 
-export async function getServerSideProps(context) {
-  return {
-    props: {},
-  }
-}
-
 function AddressPage(props) {
   const router = hooks.useRouter()
   const query = hooks.useQuery(GET_ADDRESS, {variables: {id: router.query.id}, fetchPolicy: 'cache-and-network'})

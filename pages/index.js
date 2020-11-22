@@ -35,10 +35,6 @@ const GET_ADDRESSES = gql`
   }
 `
 
-export async function getServerSideProps(context) {
-  return {props: {}}
-}
-
 function Addresses(props) {
   const query = hooks.useQuery(GET_ADDRESSES, {fetchPolicy: 'cache-and-network'})
   const router = hooks.useRouter()
