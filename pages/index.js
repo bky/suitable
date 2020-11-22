@@ -1,13 +1,14 @@
 import React from 'react'
 import Head from 'next/head'
+import NextLink from 'next/link'
 import {gql} from '@apollo/client'
 import * as hooks from 'hooks'
 import * as utils from 'utils'
 import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import {DataGrid} from '@material-ui/data-grid'
-import Link from 'next/link'
 import PageHeader from 'components/PageHeader'
 
 const TABLE_PAGE_SIZE = 18
@@ -56,11 +57,11 @@ function Addresses(props) {
       </Head>
       <Box display="flex" alignItems="flex-end" justifyContent="space-between">
         <PageHeader>Adresser</PageHeader>
-        <Link href="/addresses/new" passHref>
+        <NextLink href="/addresses/new" passHref>
           <Button variant="contained" color="primary">
             Tilføj adresse
           </Button>
-        </Link>
+        </NextLink>
       </Box>
       <Box pt={2} style={{height: TABLE_HEADER_HEIGHT + TABLE_ROW_HEIGHT * TABLE_PAGE_SIZE + 72 + 20}}>
         <DataGrid
@@ -68,8 +69,29 @@ function Addresses(props) {
           // error
           rows={addresses}
           columns={[
-            {field: 'postal_code_and_city', headerName: 'By', width: 200},
-            {field: 'name_without_city', headerName: 'Gade', flex: 1},
+            {field: 'postal_code_and_city', headerName: 'By', width: 200, disableClickEventBubbling: true},
+            {
+              field: 'name_without_city',
+              headerName: 'Gade',
+              flex: 1,
+              disableClickEventBubbling: true,
+              renderCell: (params) => {
+                return (
+                  <NextLink href={'/addresses/' + params.data.id} passHref>
+                    <Link>{params.value}</Link>
+                  </NextLink>
+                )
+              },
+            },
+            // {
+            //   field: '',
+            //   width: 80,
+            //   renderCell: (params) => {
+            //     LOG(params)
+            //     return <Link href={'/addresses/' + params.data.id}>Vis</Link>
+            //   },
+            //   disableClickEventBubbling: true,
+            // },
             // {field: 'postal_code', headerName: 'Postnummer', width: 120},
             // {field: 'city', headerName: 'By', width: 200},
             // {field: 'street', headerName: 'Gade', width: 420},
@@ -82,9 +104,9 @@ function Addresses(props) {
           headerHeight={TABLE_HEADER_HEIGHT}
           rowHeight={TABLE_ROW_HEIGHT}
           // showColumnRightBorder
-          onRowClick={(param) => {
-            router.push('/addresses/' + param.data.id)
-          }}
+          // onRowClick={(param) => {
+          //   router.push('/addresses/' + param.data.id)
+          // }}
         />
       </Box>
     </>
