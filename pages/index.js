@@ -40,10 +40,8 @@ export async function getServerSideProps(context) {
 }
 
 function Addresses(props) {
-  // LOG(props)
   const query = hooks.useQuery(GET_ADDRESSES, {fetchPolicy: 'cache-and-network'})
   const router = hooks.useRouter()
-  LOG(query.data)
   const addresses = React.useMemo(() => {
     const addresses = query.data?.addresses ?? []
     return addresses.map((address) => ({...address, postal_code_and_city: `${address.postal_code} ${address.city}`}))

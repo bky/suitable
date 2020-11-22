@@ -45,7 +45,6 @@ export default function AddressesNew(props) {
     fetch('https://dawa.aws.dk/adresser/autocomplete?fuzzy&q=' + encodeURIComponent(searchTerm))
       .then((response) => response.json())
       .then((addresses) => {
-        LOG(addresses)
         if (Array.isArray(addresses)) {
           setOptions(addresses.map((address) => ({id: address.adresse.id, text: address.tekst})))
         } else {

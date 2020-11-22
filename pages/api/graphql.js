@@ -63,7 +63,6 @@ const resolvers = {
     async createAddress(parent, args, context) {
       const result = await fetch('https://dawa.aws.dk/adresser/' + args.dawaId)
       const json = await result.json()
-      LOG(json)
       const addresses = await context
         .db('addresses')
         .insert({
@@ -93,7 +92,6 @@ const resolvers = {
         .db('addresses')
         .where({id: args.id})
         .del()
-      LOG(addresses)
       return {
         address: addresses[0],
       }
