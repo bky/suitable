@@ -18,7 +18,7 @@ global.LOG = (...args) => {
   return args[args.length - 1]
 }
 
-export default function MyApp({Component, pageProps}) {
+function MyApp({Component, pageProps}) {
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
@@ -52,3 +52,9 @@ export default function MyApp({Component, pageProps}) {
     </>
   )
 }
+
+MyApp.getInitialProps = async (ctx) => {
+  return {}
+}
+
+export default MyApp
