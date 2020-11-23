@@ -42,9 +42,10 @@ function AddressPage(props) {
   return (
     <>
       <Head>
-        <title>Suitable - Adresse</title>
+        <title>Suitable - Lejemål</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <PageHeader>Lejemål</PageHeader>
       {query.loading && !address && <CircularProgress />}
       {address && <Address address={address} />}
     </>
@@ -55,9 +56,11 @@ function Address(props) {
   const {address} = props
   return (
     <>
-      <PageHeader>{address.name}</PageHeader>
       <Box pt={2}>
-        <DeleteButton address={address} />
+        <Typography>Adresse: {address.name}</Typography>
+        <Box pt={2}>
+          <DeleteButton address={address} />
+        </Box>
       </Box>
     </>
   )
@@ -68,18 +71,23 @@ const DeleteButton = (props) => {
   const client = hooks.useClient()
   const {address} = props
   const [open, setOpen] = React.useState(false)
+  const [isDeleting, setDeleting] = React.useState(false)
   const handleClose = () => setOpen(false)
   return (
     <>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => {
-          setOpen(true)
-        }}
-      >
-        Slet
-      </Button>
+      {isDeleting ? (
+        <CircularProgress />
+      ) : (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            setOpen(true)
+          }}
+        >
+          Slet
+        </Button>
+      )}
       <Dialog
         open={open}
         onClose={handleClose}
@@ -97,9 +105,17 @@ const DeleteButton = (props) => {
           </Button>
           <Button
             onClick={() => {
-              client.mutate({mutation: DELETE_ADDRESS, variables: {id: address.id}}).then(() => {
-                router.push('/')
-              })
+              setDeleting(true)
+              handleClose()
+              client
+                .mutate({mutation: DELETE_ADDRESS, variables: {id: address.id}})
+                .then(() => {
+                  router.push('/')
+                })
+                .catch((error) => {
+                  utils.handleError(error)
+                  setDeleting(false)
+                })
             }}
             color="secondary"
             autoFocus

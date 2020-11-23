@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Typography from '@material-ui/core/Typography'
 import PageHeader from 'components/PageHeader'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const GET_ADDRESSES = gql`
   query getAddresses {
@@ -32,10 +33,10 @@ const CREATE_ADDRESS = gql`
 
 export default function AddressesNew(props) {
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const [selectedAddress, setSelectedAddress] = React.useState(null)
+  const [isCommitting, setCommitting] = React.useState(false)
 
   const client = hooks.useClient()
   const router = hooks.useRouter()
@@ -64,22 +65,15 @@ export default function AddressesNew(props) {
     }
   }, [searchTerm])
 
-  React.useEffect(() => {
-    if (!open) {
-      setOptions([])
-    }
-  }, [open])
-
   return (
     <>
       <Head>
-        <title>Suitable - Tilføj adresse</title>
+        <title>Suitable - Tilføj lejemål</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <PageHeader>Tilføj adresse</PageHeader>
+      <PageHeader>Tilføj lejemål</PageHeader>
       <Box pt={2}>
         <Autocomplete
-          // id="asynchronous-demo"
           style={{width: 500}}
           freeSolo
           inputValue={searchTerm}
@@ -87,14 +81,7 @@ export default function AddressesNew(props) {
           onChange={(_, address) => {
             setSelectedAddress(address)
           }}
-          // openOnFocus
-          open={open}
-          onOpen={() => {
-            setOpen(true)
-          }}
-          onClose={() => {
-            setOpen(false)
-          }}
+          openOnFocus
           filterOptions={(options) => options}
           getOptionSelected={(option, value) => option.id === value.id}
           getOptionLabel={(option) => option.text}
@@ -103,8 +90,6 @@ export default function AddressesNew(props) {
           renderInput={(params) => (
             <TextField
               {...params}
-              // fullWidth
-              // placeholder="Søg efter adresse ..."
               label="Søg efter adresse"
               variant="outlined"
               inputProps={{
@@ -116,21 +101,29 @@ export default function AddressesNew(props) {
         />
       </Box>
       <Box pt={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (!selectedAddress) return
-            client
-              .mutate({mutation: CREATE_ADDRESS, variables: {dawaId: selectedAddress.id}})
-              .then(({data}) => {
-                router.push('/addresses/' + data.createAddress.address.id)
-              })
-              .catch(utils.handleError)
-          }}
-        >
-          Gem
-        </Button>
+        {isCommitting ? (
+          <CircularProgress />
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              if (!selectedAddress) return
+              setCommitting(true)
+              client
+                .mutate({mutation: CREATE_ADDRESS, variables: {dawaId: selectedAddress.id}})
+                .then(({data}) => {
+                  router.push('/addresses/' + data.createAddress.address.id)
+                })
+                .catch((error) => {
+                  utils.handleError(error)
+                  setCommitting(false)
+                })
+            }}
+          >
+            Gem
+          </Button>
+        )}
       </Box>
     </>
   )
