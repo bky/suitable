@@ -53,10 +53,11 @@ function MyApp({Component, pageProps}) {
 
 const Locales = (props) => {
   const router = hooks.useRouter()
+  LOG(router)
 
   return (
     <Box display="flex">
-      <NextLink href="/" passHref locale="da">
+      <NextLink href={router.asPath} passHref locale="da">
         <Link
           color="primary"
           variant="button"
@@ -70,7 +71,7 @@ const Locales = (props) => {
         <Typography>|</Typography>
       </Box>
       <Box>
-        <NextLink href="/" passHref locale="en">
+        <NextLink href={router.asPath} passHref locale="en">
           <Link
             color="primary"
             variant="button"
