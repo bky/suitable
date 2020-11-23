@@ -12,15 +12,6 @@ import Typography from '@material-ui/core/Typography'
 import PageHeader from 'components/PageHeader'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-const GET_ADDRESSES = gql`
-  query getAddresses {
-    addresses {
-      id
-      name
-    }
-  }
-`
-
 const CREATE_ADDRESS = gql`
   mutation createAddress($dawaId: ID!) {
     createAddress(dawaId: $dawaId) {
@@ -32,6 +23,18 @@ const CREATE_ADDRESS = gql`
 `
 
 export default function AddressesNew(props) {
+  return (
+    <>
+      <Head>
+        <title>Suitable - Tilføj lejemål</title>
+      </Head>
+      <PageHeader>Tilføj lejemål</PageHeader>
+      <AddressSearch />
+    </>
+  )
+}
+
+const AddressSearch = (props) => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [options, setOptions] = React.useState([])
@@ -64,14 +67,8 @@ export default function AddressesNew(props) {
       setOptions([])
     }
   }, [searchTerm])
-
   return (
     <>
-      <Head>
-        <title>Suitable - Tilføj lejemål</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <PageHeader>Tilføj lejemål</PageHeader>
       <Box pt={2}>
         <Autocomplete
           style={{width: 500}}

@@ -6,10 +6,10 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       // light: will be calculated from palette.primary.main,
-      main: '#53BF7D',
-      main: '#46A86C',
-      main: '#429863',
-      main: '#388657',
+      // main: '#53BF7D',
+      // main: '#46A86C',
+      // main: '#429863',
+      // main: '#388657',
       main: '#222222',
       // main: '#2D523B',
       // dark: will be calculated from palette.primary.main,
@@ -21,6 +21,7 @@ const theme = createMuiTheme({
 const ThemeProvider = (props) => {
   const [currentLocale, setCurrentLocale] = React.useState('da')
 
+  // https://itnext.io/next-js-with-material-ui-7a7f6485f671
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')

@@ -16,6 +16,7 @@ export default class MyDocument extends Document {
   }
 }
 
+// https://itnext.io/next-js-with-material-ui-7a7f6485f671
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with server-side generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {

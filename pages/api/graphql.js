@@ -42,16 +42,8 @@ const formatAddress = (address) =>
 const resolvers = {
   Query: {
     async addresses(parent, args, context) {
-      const addresses = await context.db
-        .select('*')
-        .from('addresses')
-        .orderBy('name')
-      // .orderBy(['postal_code', 'name'])
-      // .orderBy("year", "asc")
-      // .limit(Math.min(args.first, 50))
-      // .offset(args.skip);
-      // return []
-      return addresses.map(formatAddress) //.slice(1, 1)
+      const addresses = await context.db.select('*').from('addresses')
+      return addresses.map(formatAddress)
     },
     async address(parent, args, context) {
       const address = await context.db
@@ -129,6 +121,7 @@ export const config = {
   },
 }
 
+// Der er ingen connection pool service på Herokus gratis pg, så hvert request åbner og lukker en db connection. Det giver et loft på ~20 concurrent requests, hvilktet nok er fint til formålet.
 const dbHandler = (handler) => async (req, res) => {
   req.db = dbConnect()
   await handler(req, res)

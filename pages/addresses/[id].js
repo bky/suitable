@@ -13,13 +13,22 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
 
 const GET_ADDRESS = gql`
   query getAddress($id: ID!) {
     address(id: $id) {
       id
+      dawa_id
       name
+      postal_code
+      city
+      street
+      number
+      floor
+      extra
+      lng
+      lat
+      matrikelnr
     }
   }
 `
@@ -43,7 +52,6 @@ function AddressPage(props) {
     <>
       <Head>
         <title>Suitable - Lejemål</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <PageHeader>Lejemål</PageHeader>
       {query.loading && !address && <CircularProgress />}
@@ -54,6 +62,7 @@ function AddressPage(props) {
 
 function Address(props) {
   const {address} = props
+
   return (
     <>
       <Box pt={2}>
@@ -73,6 +82,7 @@ const DeleteButton = (props) => {
   const [open, setOpen] = React.useState(false)
   const [isDeleting, setDeleting] = React.useState(false)
   const handleClose = () => setOpen(false)
+
   return (
     <>
       {isDeleting ? (
@@ -88,12 +98,7 @@ const DeleteButton = (props) => {
           Slet
         </Button>
       )}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+      <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {`Er du sikker på, at du vil slette adressen "${address.name}" fra din portefølje?`}
