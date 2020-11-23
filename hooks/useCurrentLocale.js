@@ -1,7 +1,7 @@
 import React from 'react'
-import CurrentLocaleContext from 'contexts/CurrentLocaleContext'
+import useRouter from 'hooks/useRouter'
 
 export default function useCurrentLocale() {
-  const context = React.useContext(CurrentLocaleContext)
-  return [context.currentLocale, context.setCurrentLocale]
+  const router = useRouter()
+  return router.locale
 }

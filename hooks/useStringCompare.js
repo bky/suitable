@@ -2,7 +2,7 @@ import React from 'react'
 import useCurrentLocale from './useCurrentLocale'
 
 export default function useStringCompare() {
-  const [currentLocale, setCurrentLocale] = useCurrentLocale()
+  const currentLocale = useCurrentLocale()
 
   const comparer = React.useMemo(() => {
     if (typeof Intl === 'object' && typeof Intl.Collator === 'function') {
