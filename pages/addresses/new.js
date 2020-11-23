@@ -9,8 +9,9 @@ import Box from '@material-ui/core/Box'
 import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Typography from '@material-ui/core/Typography'
-import PageHeader from 'components/PageHeader'
+import Page from 'components/Page'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import {FormattedMessage} from 'react-intl'
 
 const CREATE_ADDRESS = gql`
   mutation createAddress($dawaId: ID!) {
@@ -24,13 +25,9 @@ const CREATE_ADDRESS = gql`
 
 export default function AddressesNew(props) {
   return (
-    <>
-      <Head>
-        <title>Suitable - Tilføj lejemål</title>
-      </Head>
-      <PageHeader>Tilføj lejemål</PageHeader>
+    <Page title={{id: '@t.new_tenancy_page_title@@'}} headerText={{id: '@t.new_tenancy_header@@'}}>
       <AddressSearch />
-    </>
+    </Page>
   )
 }
 
@@ -43,6 +40,7 @@ const AddressSearch = (props) => {
 
   const client = hooks.useClient()
   const router = hooks.useRouter()
+  const intl = hooks.useIntl()
 
   const searchDAWA = (searchTerm) => {
     setLoading(true)
@@ -87,7 +85,7 @@ const AddressSearch = (props) => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Søg efter adresse"
+              label={intl.formatMessage({id: '@t.new_tenancy_search_placeholder@@'})}
               variant="outlined"
               inputProps={{
                 ...params.inputProps,
@@ -118,7 +116,7 @@ const AddressSearch = (props) => {
                 })
             }}
           >
-            Gem
+            <FormattedMessage id="@t.save@@" />
           </Button>
         )}
       </Box>

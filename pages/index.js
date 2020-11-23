@@ -1,5 +1,4 @@
 import React from 'react'
-import Head from 'next/head'
 import NextLink from 'next/link'
 import {gql} from '@apollo/client'
 import * as hooks from 'hooks'
@@ -8,7 +7,8 @@ import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
 import Link from '@material-ui/core/Link'
 import {DataGrid} from '@material-ui/data-grid'
-import PageHeader from 'components/PageHeader'
+import Page from 'components/Page'
+import {FormattedMessage} from 'react-intl'
 
 const TABLE_PAGE_SIZE = 15
 const TABLE_HEADER_HEIGHT = 36
@@ -30,20 +30,19 @@ function Addresses(props) {
   const query = hooks.useQuery(GET_ADDRESSES, {fetchPolicy: 'cache-and-network'})
 
   return (
-    <>
-      <Head>
-        <title>Suitable - Lejemål</title>
-      </Head>
-      <Box display="flex" alignItems="flex-end" justifyContent="space-between">
-        <PageHeader>Lejemål</PageHeader>
+    <Page
+      title={{id: '@t.tenancies_page_title@@'}}
+      headerText={{id: '@t.tenancies_header@@'}}
+      headerRight={
         <NextLink href="/addresses/new" passHref>
           <Button variant="contained" color="primary">
-            Tilføj lejemål
+            <FormattedMessage id="@t.add_tenancy_button@@" />
           </Button>
         </NextLink>
-      </Box>
+      }
+    >
       <AddressList query={query} />
-    </>
+    </Page>
   )
 }
 
@@ -51,6 +50,7 @@ function AddressList(props) {
   const router = hooks.useRouter()
   const orderByString = hooks.useOrderByString()
   const stringCompare = hooks.useStringCompare()
+  const intl = hooks.useIntl()
 
   const addresses = React.useMemo(() => {
     const addresses = props.query.data?.addresses ?? []
@@ -81,7 +81,7 @@ function AddressList(props) {
         columns={[
           {
             field: 'name_without_city',
-            headerName: 'Adresse',
+            headerName: intl.formatMessage({id: '@t.address@@'}),
             flex: 1,
             disableClickEventBubbling: true,
             renderCell: (params) => {
@@ -95,7 +95,7 @@ function AddressList(props) {
           },
           {
             field: 'postal_code_and_city',
-            headerName: 'By',
+            headerName: intl.formatMessage({id: '@t.city@@'}),
             width: 200,
             disableClickEventBubbling: true,
           },
@@ -105,7 +105,9 @@ function AddressList(props) {
           noRowsOverlay: () =>
             addresses.length ? null : (
               <Box display="flex" justifyContent="center" mt={40}>
-                <span>Ingen lejemål</span>
+                <span>
+                  <FormattedMessage id="@t.no_tenancies_found@@" />
+                </span>
               </Box>
             ),
         }}

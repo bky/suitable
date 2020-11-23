@@ -8,11 +8,12 @@ import Box from '@material-ui/core/Box'
 import Link from 'next/link'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import PageHeader from 'components/PageHeader'
+import Page from 'components/Page'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
+import {FormattedMessage} from 'react-intl'
 
 const GET_ADDRESS = gql`
   query getAddress($id: ID!) {
@@ -49,14 +50,10 @@ function AddressPage(props) {
   const address = query.data?.address
 
   return (
-    <>
-      <Head>
-        <title>Suitable - Lejemål</title>
-      </Head>
-      <PageHeader>Lejemål</PageHeader>
+    <Page title={{id: '@t.tenancy_page_title@@'}} headerText={{id: '@t.tenancy_header@@'}}>
       {query.loading && !address && <CircularProgress />}
       {address && <Address address={address} />}
-    </>
+    </Page>
   )
 }
 
@@ -66,7 +63,9 @@ function Address(props) {
   return (
     <>
       <Box pt={2}>
-        <Typography>Adresse: {address.name}</Typography>
+        <Typography>
+          <FormattedMessage id="@t.address_entry@@" values={{address: address.name}} />
+        </Typography>
         <Box pt={2}>
           <DeleteButton address={address} />
         </Box>
@@ -95,18 +94,18 @@ const DeleteButton = (props) => {
             setOpen(true)
           }}
         >
-          Slet
+          <FormattedMessage id="@t.delete@@" />
         </Button>
       )}
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {`Er du sikker på, at du vil slette adressen "${address.name}" fra din portefølje?`}
+            <FormattedMessage id="@t.delete_tenancy_confirmation@@" values={{address: address.name}} />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Annullér
+            <FormattedMessage id="@t.cancel@@" />
           </Button>
           <Button
             onClick={() => {
@@ -125,7 +124,7 @@ const DeleteButton = (props) => {
             color="secondary"
             autoFocus
           >
-            Slet
+            <FormattedMessage id="@t.delete@@" />
           </Button>
         </DialogActions>
       </Dialog>

@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container'
 import ApolloProvider from 'providers/ApolloProvider'
 import LocaleProvider from 'providers/LocaleProvider'
 import ThemeProvider from 'providers/ThemeProvider'
+import {FormattedMessage} from 'react-intl'
 
 global.__DEV__ = process.env.NODE_ENV !== 'production'
 
@@ -30,7 +31,7 @@ function MyApp({Component, pageProps}) {
               <Box pt={2} pb={4}>
                 <NextLink href="/" passHref>
                   <Link color="primary" variant="h6" underline="none">
-                    Portefølje
+                    <FormattedMessage id="@t.portfolio@@" />
                   </Link>
                 </NextLink>
               </Box>
