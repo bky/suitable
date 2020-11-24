@@ -53,35 +53,28 @@ function MyApp({Component, pageProps}) {
 
 const Locales = (props) => {
   const router = hooks.useRouter()
-  LOG(router)
 
   return (
     <Box display="flex">
-      <NextLink href={router.asPath} passHref locale="da">
-        <Link
-          color="primary"
-          variant="button"
-          underline="none"
-          style={router.locale === 'da' ? {fontWeight: 700} : null}
-        >
-          da
-        </Link>
-      </NextLink>
-      <Box mx={1}>
-        <Typography>|</Typography>
-      </Box>
-      <Box>
-        <NextLink href={router.asPath} passHref locale="en">
-          <Link
-            color="primary"
-            variant="button"
-            underline="none"
-            style={router.locale === 'en' ? {fontWeight: 700} : null}
-          >
-            en
-          </Link>
-        </NextLink>
-      </Box>
+      {router.locales.map((locale, index) => (
+        <React.Fragment key={locale}>
+          {index > 0 && (
+            <Box mx={1}>
+              <Typography variant="button">|</Typography>
+            </Box>
+          )}
+          <NextLink href={router.asPath} passHref locale={locale}>
+            <Link
+              color="primary"
+              variant="button"
+              underline="none"
+              style={router.locale === locale ? {fontWeight: 700} : null}
+            >
+              {locale}
+            </Link>
+          </NextLink>
+        </React.Fragment>
+      ))}
     </Box>
   )
 }
