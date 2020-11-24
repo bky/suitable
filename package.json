@@ -13,6 +13,7 @@
     "@material-ui/data-grid": "^4.0.0-alpha.10",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "apollo-server-micro": "^2.19.0",
+    "escape-string-regexp": "^4.0.0",
     "graphql": "^15.4.0",
     "intl": "^1.2.5",
     "knex": "^0.21.12",

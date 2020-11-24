@@ -10,6 +10,7 @@ import {DataGrid} from '@material-ui/data-grid'
 import Page from 'components/Page'
 import {FormattedMessage} from 'react-intl'
 import TextField from '@material-ui/core/TextField'
+import escapeStringRegexp from 'escape-string-regexp'
 
 const TABLE_PAGE_SIZE = 15
 const TABLE_HEADER_HEIGHT = 36
@@ -59,23 +60,53 @@ function Addresses(props) {
   )
 }
 
+const SAMESAME = {
+  a: '[aàáâäãāa]',
+  e: '[eéèêëēėę]',
+  y: '[yÿ]',
+  u: '[uûüùúū]',
+  i: '[iîïíīįì]',
+  o: '[oôöòóōõ]',
+  s: '[sßśš]',
+  l: '[lł]',
+  z: '[zžźż]',
+  c: '[cçćč]',
+  n: '[nñń]',
+}
+
+const getFilteredAddresses = (addresses, query) => {
+  const queryAry = query
+    .split('')
+    .filter((c) => c.trim() && c !== '.' && c !== ',')
+    .map((c) => SAMESAME[c] || escapeStringRegexp(c))
+
+  let relaxedRegex = RegExp(`.*${queryAry.join('.*')}.*`, 'i')
+  return addresses.filter((address) => relaxedRegex.test(address.name))
+}
+
 function AddressList(props) {
   const router = hooks.useRouter()
   const orderByString = hooks.useOrderByString()
   const stringCompare = hooks.useStringCompare()
   const intl = hooks.useIntl()
+  const [searchTerm, setSearchTerm] = React.useState(() => router.query.q || '')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = React.useState(searchTerm)
+
+  hooks.useDebounced(() => setDebouncedSearchTerm(searchTerm), 300, [searchTerm])
 
   const addresses = React.useMemo(() => {
     const addresses = props.query.data?.addresses ?? []
+    const filteredAddresses = getFilteredAddresses(addresses, searchTerm)
+
     return orderByString(
-      addresses.map((address) => ({
+      filteredAddresses.map((address) => ({
         ...address,
         name_without_city: address.name.replace(`\, ${address.postal_code} ${address.city}`, ''),
         postal_code_and_city: `${address.postal_code} ${address.city}`,
       })),
       (address) => address.name_without_city,
     )
-  }, [orderByString, props.query.data?.addresses])
+  }, [orderByString, props.query.data?.addresses, searchTerm])
 
   const [page, setPage] = React.useState(() => +(router.query.page || 1))
   const [sortModel, setSortModel] = React.useState(() =>
@@ -85,76 +116,77 @@ function AddressList(props) {
   React.useEffect(() => {
     const query = {page}
     if (sortModel.length > 0) query.sort = `${sortModel[0].field}__${sortModel[0].sort}`
+    if (debouncedSearchTerm) query.q = debouncedSearchTerm
     router.replace({pathname: '/', query})
-  }, [page, sortModel])
-
-  const [searchTerm, setSearchTerm] = React.useState('')
+  }, [page, sortModel, debouncedSearchTerm])
 
   return (
-    <Box pt={2} style={{height: TABLE_HEIGHT}}>
-      <TextField
-        label={intl.formatMessage({id: '@t.new_tenancy_search_placeholder@@'})}
-        variant="outlined"
-        value={searchTerm}
-        onChange={(event) => {
-          setSearchTerm(event.target.value)
-        }}
-      />
-      <DataGrid
-        loading={props.query.loading && !addresses.length}
-        // error
-        rows={addresses}
-        columns={[
-          {
-            field: 'address',
-            valueGetter: (params) => {
-              LOG('valueGetter')
-              return params.data.name_without_city
+    <Box pt={2}>
+      <Box>
+        <TextField
+          label={intl.formatMessage({id: '@t.new_tenancy_search_placeholder@@'})}
+          variant="outlined"
+          value={searchTerm}
+          onChange={(event) => {
+            setSearchTerm(event.target.value)
+            setPage(1)
+          }}
+        />
+      </Box>
+      <Box pt={2} style={{height: TABLE_HEIGHT}}>
+        <DataGrid
+          loading={props.query.loading && !addresses.length}
+          // error
+          rows={addresses}
+          columns={[
+            {
+              field: 'address',
+              valueGetter: (params) => params.data.name_without_city,
+              headerName: intl.formatMessage({id: '@t.address@@'}),
+              flex: 1,
+              disableClickEventBubbling: true,
+              renderCell: (params) => {
+                return (
+                  <NextLink href={'/addresses/' + params.data.id} passHref>
+                    <Link style={{width: '100%'}}>{params.value}</Link>
+                  </NextLink>
+                )
+              },
+              sortComparator: (v1, v2, p1, p2) => stringCompare(p1.data.name_without_city, p2.data.name_without_city),
             },
-            headerName: intl.formatMessage({id: '@t.address@@'}),
-            flex: 1,
-            disableClickEventBubbling: true,
-            renderCell: (params) => {
-              return (
-                <NextLink href={'/addresses/' + params.data.id} passHref>
-                  <Link style={{width: '100%'}}>{params.value}</Link>
-                </NextLink>
-              )
+            {
+              field: 'city',
+              valueGetter: (params) => params.data.postal_code_and_city,
+              headerName: intl.formatMessage({id: '@t.city@@'}),
+              width: 200,
+              disableClickEventBubbling: true,
             },
-            sortComparator: (v1, v2, p1, p2) => stringCompare(p1.data.name_without_city, p2.data.name_without_city),
-          },
-          {
-            field: 'city',
-            valueGetter: (params) => params.data.postal_code_and_city,
-            headerName: intl.formatMessage({id: '@t.city@@'}),
-            width: 200,
-            disableClickEventBubbling: true,
-          },
-        ]}
-        pageSize={TABLE_PAGE_SIZE}
-        components={{
-          noRowsOverlay: () =>
-            addresses.length ? null : (
-              <Box display="flex" justifyContent="center" mt={40}>
-                <span>
-                  <FormattedMessage id="@t.no_tenancies_found@@" />
-                </span>
-              </Box>
-            ),
-        }}
-        headerHeight={TABLE_HEADER_HEIGHT}
-        rowHeight={TABLE_ROW_HEIGHT}
-        page={addresses.length ? page : 1}
-        onPageChange={(params) => {
-          if (params.pageCount) {
-            setPage(params.page)
-          }
-        }}
-        sortModel={sortModel}
-        onSortModelChange={({sortModel}) => {
-          setSortModel(sortModel)
-        }}
-      />
+          ]}
+          pageSize={TABLE_PAGE_SIZE}
+          components={{
+            noRowsOverlay: () =>
+              addresses.length ? null : (
+                <Box display="flex" justifyContent="center" mt={40}>
+                  <span>
+                    <FormattedMessage id="@t.no_tenancies_found@@" />
+                  </span>
+                </Box>
+              ),
+          }}
+          headerHeight={TABLE_HEADER_HEIGHT}
+          rowHeight={TABLE_ROW_HEIGHT}
+          page={addresses.length ? page : 1}
+          onPageChange={(params) => {
+            if (params.pageCount) {
+              setPage(params.page)
+            }
+          }}
+          sortModel={sortModel}
+          onSortModelChange={({sortModel}) => {
+            setSortModel(sortModel)
+          }}
+        />
+      </Box>
     </Box>
   )
 }
