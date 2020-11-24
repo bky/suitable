@@ -35,13 +35,21 @@ function Addresses(props) {
 
   React.useEffect(() => {
     const callback = (url) => {
-      if (url === '/') setKey((key) => key + 1)
+      if (!/\?/.test(url)) setKey((key) => key + 1)
     }
     router.events.on('routeChangeComplete', callback)
     return () => {
       router.events.off('routeChangeComplete', callback)
     }
   }, [])
+
+  const faulty = Object.keys(router.query).length === 0 && /\?/.test(router.asPath)
+  React.useEffect(() => {
+    if (faulty) {
+      router.replace(router.asPath)
+    }
+  }, [])
+  if (faulty) return null
 
   return (
     <Page
