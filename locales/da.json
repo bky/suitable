@@ -1,0 +1,20 @@
+{
+  "@t.portfolio@@": "Portefølje",
+  "@t.tenancies_page_title@@": "Suitable - Lejemål",
+  "@t.tenancies_header@@": "Lejemål",
+  "@t.add_tenancy_button@@": "Tilføj lejemål",
+  "@t.no_tenancies_found@@": "Ingen lejemål",
+  "@t.filter_addresses@@": "Søg adresser",
+  "@t.new_tenancy_page_title@@": "Suitable - Tilføj lejemål",
+  "@t.new_tenancy_header@@": "Tilføj lejemål",
+  "@t.new_tenancy_search_placeholder@@": "Søg adresser",
+  "@t.address@@": "Adresse",
+  "@t.address_entry@@": "Adresse: {address}",
+  "@t.city@@": "By",
+  "@t.save@@": "Gem",
+  "@t.delete@@": "Slet",
+  "@t.cancel@@": "Annullér",
+  "@t.tenancy_page_title@@": "Suitable - Lejemål",
+  "@t.tenancy_header@@": "Lejemål",
+  "@t.delete_tenancy_confirmation@@": "Er du sikker på, at du vil slette lejemålet \"{address}\" fra din portefølje?"
+}

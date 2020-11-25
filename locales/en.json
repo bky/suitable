@@ -1,0 +1,20 @@
+{
+  "@t.portfolio@@": "Portfolio",
+  "@t.tenancies_page_title@@": "Suitable - Tenancy",
+  "@t.tenancies_header@@": "Tenancy",
+  "@t.add_tenancy_button@@": "Add tenancy",
+  "@t.no_tenancies_found@@": "No tenancies",
+  "@t.filter_addresses@@": "Search addresses",
+  "@t.new_tenancy_page_title@@": "Suitable - Add tenancy",
+  "@t.new_tenancy_header@@": "Add tenancy",
+  "@t.new_tenancy_search_placeholder@@": "Search addresses",
+  "@t.address@@": "Address",
+  "@t.address_entry@@": "Address: {address}",
+  "@t.city@@": "City",
+  "@t.save@@": "Save",
+  "@t.delete@@": "Delete",
+  "@t.cancel@@": "Cancel",
+  "@t.tenancy_page_title@@": "Suitable - Tenancy",
+  "@t.tenancy_header@@": "Tenancy",
+  "@t.delete_tenancy_confirmation@@": "Are you sure you want to delete the tenancy \"{address}\" from your portfolio?"
+}
