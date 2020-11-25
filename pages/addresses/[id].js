@@ -70,7 +70,7 @@ function Address(props) {
         <Box pt={2}>
           <DeleteButton address={address} />
         </Box>
-        <Box pt={2}>
+        <Box pt={3}>
           <Map address={address} />
         </Box>
       </Box>

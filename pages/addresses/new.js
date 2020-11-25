@@ -33,6 +33,7 @@ export default function AddressesNew(props) {
 
 const AddressSearch = (props) => {
   const [searchTerm, setSearchTerm] = React.useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [options, setOptions] = React.useState([])
   const [selectedAddress, setSelectedAddress] = React.useState(null)
@@ -41,6 +42,8 @@ const AddressSearch = (props) => {
   const client = hooks.useClient()
   const router = hooks.useRouter()
   const intl = hooks.useIntl()
+
+  hooks.useDebounced(() => setDebouncedSearchTerm(searchTerm), 300, [searchTerm])
 
   const searchDAWA = (searchTerm) => {
     setLoading(true)
@@ -59,12 +62,13 @@ const AddressSearch = (props) => {
   }
 
   React.useEffect(() => {
-    if (searchTerm.length) {
-      searchDAWA(searchTerm)
+    if (debouncedSearchTerm.length) {
+      searchDAWA(debouncedSearchTerm)
     } else {
       setOptions([])
     }
-  }, [searchTerm])
+  }, [debouncedSearchTerm])
+
   return (
     <>
       <Box pt={2}>

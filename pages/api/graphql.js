@@ -36,6 +36,7 @@ const resolvers = {
   Query: {
     async addresses(parent, args, context) {
       const addresses = await context.db.select('*').from('addresses')
+
       return addresses
     },
     async address(parent, args, context) {
@@ -44,6 +45,7 @@ const resolvers = {
         .from('addresses')
         .where({id: args.id})
         .first()
+
       return address
     },
   },
@@ -78,8 +80,6 @@ const resolvers = {
           })
           .returning('*')
 
-        // http://maps.google.com/maps?q=&layer=c&cbll=55.69150815,12.5590054&cbp=11,0,0,0,0
-        // http://maps.google.com/maps?q=&layer=c&cbll=55.69156324,12.55890185&cbp=11,0,0,0,0
         return {
           address: addresses[0],
         }
@@ -95,6 +95,7 @@ const resolvers = {
         .db('addresses')
         .where({id: args.id})
         .del()
+
       return {address}
     },
   },
@@ -112,7 +113,8 @@ export const config = {
   },
 }
 
-// Der er ingen connection pool service på Herokus gratis pg, så hvert request åbner og lukker en db connection. Det giver et loft på ~20 concurrent requests, hvilktet nok er fint til formålet.
+// There is no connection pool service on Heroku's free pg så every request opens and closes a db connection.
+// This limits request concurrency to around 20 which should be fine for this project.
 const dbHandler = (handler) => async (req, res) => {
   req.db = dbConnect()
   await handler(req, res)

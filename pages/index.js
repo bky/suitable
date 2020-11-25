@@ -108,17 +108,19 @@ function AddressList(props) {
 
   const addresses = React.useMemo(() => {
     const addresses = props.query.data?.addresses ?? []
-    const filteredAddresses = getFilteredAddresses(addresses, searchTerm)
-
     return orderByString(
-      filteredAddresses.map((address) => ({
+      addresses.map((address) => ({
         ...address,
         name_without_city: address.name.replace(`\, ${address.postal_code} ${address.city}`, ''),
         postal_code_and_city: `${address.postal_code} ${address.city}`,
       })),
       (address) => address.name_without_city,
     )
-  }, [orderByString, props.query.data?.addresses, searchTerm])
+  }, [props.query.data?.addresses, orderByString])
+
+  const filteredAddresses = React.useMemo(() => {
+    return getFilteredAddresses(addresses, searchTerm)
+  }, [addresses, searchTerm])
 
   const [page, setPage] = React.useState(() => +(router.query.page || 1))
   const [sortModel, setSortModel] = React.useState(() =>
@@ -150,8 +152,7 @@ function AddressList(props) {
       <Box pt={2} style={{height: TABLE_HEIGHT}}>
         <DataGrid
           loading={props.query.loading && !addresses.length}
-          // error
-          rows={addresses}
+          rows={filteredAddresses}
           columns={[
             {
               field: 'address',
@@ -179,7 +180,7 @@ function AddressList(props) {
           pageSize={TABLE_PAGE_SIZE}
           components={{
             noRowsOverlay: () =>
-              addresses.length ? null : (
+              filteredAddresses.length ? null : (
                 <Box display="flex" justifyContent="center" mt={40}>
                   <span>
                     <FormattedMessage id="@t.no_tenancies_found@@" />
@@ -191,13 +192,11 @@ function AddressList(props) {
           rowHeight={TABLE_ROW_HEIGHT}
           page={addresses.length ? page : 1}
           onPageChange={(params) => {
-            if (params.pageCount) {
-              setPage(params.page)
-            }
+            if (params.pageCount) setPage(params.page)
           }}
           sortModel={sortModel}
-          onSortModelChange={({sortModel}) => {
-            setSortModel(sortModel)
+          onSortModelChange={(params) => {
+            setSortModel(params.sortModel)
           }}
         />
       </Box>
