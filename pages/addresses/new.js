@@ -69,7 +69,7 @@ const AddressSearch = (props) => {
     <>
       <Box pt={2}>
         <Autocomplete
-          style={{width: 500}}
+          style={{maxWidth: 500}}
           freeSolo
           inputValue={searchTerm}
           onInputChange={(_, searchTerm) => setSearchTerm(searchTerm)}

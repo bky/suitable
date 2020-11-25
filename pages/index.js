@@ -31,8 +31,9 @@ const GET_ADDRESSES = gql`
 function Addresses(props) {
   const query = hooks.useQuery(GET_ADDRESSES, {fetchPolicy: 'cache-and-network'})
   const router = hooks.useRouter()
-  const [key, setKey] = React.useState(1)
 
+  // Reset AddressList by giving it a new key when navigating from / to / (by clicking the 'Portfolio' button).
+  const [key, setKey] = React.useState(1)
   React.useEffect(() => {
     const callback = (url) => {
       if (!/\?/.test(url)) setKey((key) => key + 1)
@@ -43,13 +44,15 @@ function Addresses(props) {
     }
   }, [])
 
-  const faulty = Object.keys(router.query).length === 0 && /\?/.test(router.asPath)
-  React.useEffect(() => {
-    if (faulty) {
+  // For some reason the query is an empty object on browser back when locale is not default locale.
+  // This hack fixes it.
+  const missingQuery = Object.keys(router.query).length === 0 && /\?/.test(router.asPath)
+  React.useLayoutEffect(() => {
+    if (missingQuery) {
       router.replace(router.asPath)
     }
   }, [])
-  if (faulty) return null
+  if (missingQuery) return null
 
   return (
     <Page
@@ -100,6 +103,7 @@ function AddressList(props) {
   const [searchTerm, setSearchTerm] = React.useState(() => router.query.q || '')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = React.useState(searchTerm)
 
+  // Avoid spamming history.replaceState, it is rate-limited.
   hooks.useDebounced(() => setDebouncedSearchTerm(searchTerm), 300, [searchTerm])
 
   const addresses = React.useMemo(() => {
@@ -129,10 +133,12 @@ function AddressList(props) {
   }, [page, sortModel, debouncedSearchTerm])
 
   return (
-    <Box pt={2}>
+    <Box pt={3}>
       <Box>
         <TextField
-          label={intl.formatMessage({id: '@t.new_tenancy_search_placeholder@@'})}
+          fullWidth
+          size="small"
+          label={intl.formatMessage({id: '@t.filter_addresses@@'})}
           variant="outlined"
           value={searchTerm}
           onChange={(event) => {

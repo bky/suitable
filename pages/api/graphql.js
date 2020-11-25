@@ -32,18 +32,11 @@ const typeDefs = gql`
   }
 `
 
-const formatAddress = (address) =>
-  address
-    ? {
-        ...address,
-      }
-    : null
-
 const resolvers = {
   Query: {
     async addresses(parent, args, context) {
       const addresses = await context.db.select('*').from('addresses')
-      return addresses.map(formatAddress)
+      return addresses
     },
     async address(parent, args, context) {
       const address = await context.db
@@ -51,7 +44,7 @@ const resolvers = {
         .from('addresses')
         .where({id: args.id})
         .first()
-      return formatAddress(address)
+      return address
     },
   },
   Mutation: {
@@ -63,7 +56,7 @@ const resolvers = {
         .first()
       if (existingAddress) {
         return {
-          address: formatAddress(existingAddress),
+          address: existingAddress,
         }
       } else {
         const result = await fetch('https://dawa.aws.dk/adresser/' + args.dawaId)
@@ -88,7 +81,7 @@ const resolvers = {
         // http://maps.google.com/maps?q=&layer=c&cbll=55.69150815,12.5590054&cbp=11,0,0,0,0
         // http://maps.google.com/maps?q=&layer=c&cbll=55.69156324,12.55890185&cbp=11,0,0,0,0
         return {
-          address: formatAddress(addresses[0]),
+          address: addresses[0],
         }
       }
     },
@@ -102,9 +95,7 @@ const resolvers = {
         .db('addresses')
         .where({id: args.id})
         .del()
-      return {
-        address: formatAddress(address),
-      }
+      return {address}
     },
   },
 }

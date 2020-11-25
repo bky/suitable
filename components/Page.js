@@ -14,7 +14,7 @@ const Page = (props) => {
       <Head>
         <title>{intl.formatMessage(props.title)}</title>
       </Head>
-      <Box display="flex" alignItems="flex-end" justifyContent="space-between">
+      <Box display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h3">
           <FormattedMessage {...props.headerText} />
         </Typography>
