@@ -60,7 +60,9 @@ const Locales = (props) => {
         <React.Fragment key={locale}>
           {index > 0 && (
             <Box mx={1}>
-              <Typography variant="button">|</Typography>
+              <Typography variant="button" style={{fontWeight: 300}}>
+                |
+              </Typography>
             </Box>
           )}
           <NextLink href={router.asPath} passHref locale={locale}>
@@ -68,7 +70,7 @@ const Locales = (props) => {
               color="primary"
               variant="button"
               underline="none"
-              style={router.locale === locale ? {fontWeight: 700} : null}
+              style={{fontWeight: router.locale === locale ? 700 : 300}}
             >
               {locale}
             </Link>
