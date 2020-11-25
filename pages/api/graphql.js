@@ -16,8 +16,8 @@ const typeDefs = gql`
     number: String
     floor: String
     extra: String
-    lng: String
-    lat: String
+    lng: Float
+    lat: Float
     matrikelnr: String
   }
   type Mutation {

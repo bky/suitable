@@ -14,6 +14,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import {FormattedMessage} from 'react-intl'
+import GoogleMapReact from 'google-map-react'
 
 const GET_ADDRESS = gql`
   query getAddress($id: ID!) {
@@ -69,10 +70,42 @@ function Address(props) {
         <Box pt={2}>
           <DeleteButton address={address} />
         </Box>
+        <Box pt={2}>
+          <Map address={address} />
+        </Box>
       </Box>
     </>
   )
 }
+
+const Map = (props) => {
+  const {address} = props
+  return (
+    <div style={{height: 500, width: '100%'}}>
+      <GoogleMapReact
+        bootstrapURLKeys={{key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}}
+        defaultCenter={{
+          lat: address.lat,
+          lng: address.lng,
+        }}
+        defaultZoom={15}
+      >
+        <Pin lat={address.lat} lng={address.lng} />
+      </GoogleMapReact>
+    </div>
+  )
+}
+
+const Pin = ({text}) => (
+  <Box
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+    style={{width: 20, height: 20, marginLeft: -10, marginTop: -10}}
+  >
+    <Typography style={{fontSize: 40, color: 'black'}}>⚬</Typography>
+  </Box>
+)
 
 const DeleteButton = (props) => {
   const router = hooks.useRouter()
